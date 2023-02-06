@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandLittleBrother/AshuraForRoblox/main/CustomModules/6872274481.lua", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandLittleBrother/AshuraForRoblox/main/MainScript.lua", true))()
