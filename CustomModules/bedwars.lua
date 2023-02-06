@@ -1,6 +1,6 @@
 --[[
 	Credits:
-	Vape - Disguise Character
+	Vape - Winter Sky
 ]]
 local lib = shared.GuiLibrary
 
@@ -58,23 +58,85 @@ local function getCurrentSword()
 end
 
 task.spawn(function()
-	for i,v in pairs(game:GetService("Lighting"):GetChildren()) do
-		if v:IsA("Atmosphere") or v:IsA("Sky") or v:IsA("PostEffect") then
-			v:Remove()
+	task.spawn(function()
+		for i,v in pairs(game:GetService("Lighting"):GetChildren()) do
+			if v:IsA("Atmosphere") or v:IsA("Sky") or v:IsA("PostEffect") then
+				v:Remove()
+			end
 		end
-	end
-	local Sky = Instance.new("Sky")
-	Sky.SkyboxUp = "rbxassetid://12256126435"
-	Sky.SkyboxLf = "rbxassetid://12256091030"
-	Sky.SkyboxBk = "rbxassetid://12256034686"
-	Sky.SkyboxFt = "rbxassetid://12256077178"
-	Sky.SkyboxDn = "rbxassetid://12256053605"
-	Sky.SkyboxRt = "rbxassetid://12256116644"
-	Sky.Parent = game:GetService("Lighting")
-
-	local Blur = Instance.new("BlurEffect")
-	Blur.Size = 4
-	Blur.Parent = game:GetService("Lighting")
+		local sky = Instance.new("Sky")
+		sky.StarCount = 5000
+		sky.SkyboxUp = "rbxassetid://8139676647"
+		sky.SkyboxLf = "rbxassetid://8139676988"
+		sky.SkyboxFt = "rbxassetid://8139677111"
+		sky.SkyboxBk = "rbxassetid://8139677359"
+		sky.SkyboxDn = "rbxassetid://8139677253"
+		sky.SkyboxRt = "rbxassetid://8139676842"
+		sky.SunTextureId = "rbxassetid://6196665106"
+		sky.SunAngularSize = 11
+		sky.MoonTextureId = "rbxassetid://8139665943"
+		sky.MoonAngularSize = 30
+		sky.Parent = game:GetService("Lighting")
+		local sunray = Instance.new("SunRaysEffect")
+		sunray.Intensity = 0.03
+		sunray.Parent = game:GetService("Lighting")
+		local bloom = Instance.new("BloomEffect")
+		bloom.Threshold = 2
+		bloom.Intensity = 1
+		bloom.Size = 2
+		bloom.Parent = game:GetService("Lighting")
+		local atmosphere = Instance.new("Atmosphere")
+		atmosphere.Density = 0.3
+		atmosphere.Offset = 0.25
+		atmosphere.Color = Color3.fromRGB(198, 198, 198)
+		atmosphere.Decay = Color3.fromRGB(104, 112, 124)
+		atmosphere.Glare = 0
+		atmosphere.Haze = 0
+		atmosphere.Parent = game:GetService("Lighting")
+	end)
+	task.spawn(function()
+		local snowpart = Instance.new("Part")
+		snowpart.Size = Vector3.new(240, 0.5, 240)
+		snowpart.Name = "SnowParticle"
+		snowpart.Transparency = 1
+		snowpart.CanCollide = false
+		snowpart.Position = Vector3.new(0, 120, 286)
+		snowpart.Anchored = true
+		snowpart.Parent = workspace
+		local snow = Instance.new("ParticleEmitter")
+		snow.RotSpeed = NumberRange.new(300)
+		snow.VelocitySpread = 35
+		snow.Rate = 28
+		snow.Texture = "rbxassetid://8158344433"
+		snow.Rotation = NumberRange.new(110)
+		snow.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.16939899325371,0),NumberSequenceKeypoint.new(0.23365999758244,0.62841498851776,0.37158501148224),NumberSequenceKeypoint.new(0.56209099292755,0.38797798752785,0.2771390080452),NumberSequenceKeypoint.new(0.90577298402786,0.51912599802017,0),NumberSequenceKeypoint.new(1,1,0)})
+		snow.Lifetime = NumberRange.new(8,14)
+		snow.Speed = NumberRange.new(8,18)
+		snow.EmissionDirection = Enum.NormalId.Bottom
+		snow.SpreadAngle = Vector2.new(35,35)
+		snow.Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.039760299026966,1.3114800453186,0.32786899805069),NumberSequenceKeypoint.new(0.7554469704628,0.98360699415207,0.44038599729538),NumberSequenceKeypoint.new(1,0,0)})
+		snow.Parent = snowpart
+		local windsnow = Instance.new("ParticleEmitter")
+		windsnow.Acceleration = Vector3.new(0,0,1)
+		windsnow.RotSpeed = NumberRange.new(100)
+		windsnow.VelocitySpread = 35
+		windsnow.Rate = 28
+		windsnow.Texture = "rbxassetid://8158344433"
+		windsnow.EmissionDirection = Enum.NormalId.Bottom
+		windsnow.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.16939899325371,0),NumberSequenceKeypoint.new(0.23365999758244,0.62841498851776,0.37158501148224),NumberSequenceKeypoint.new(0.56209099292755,0.38797798752785,0.2771390080452),NumberSequenceKeypoint.new(0.90577298402786,0.51912599802017,0),NumberSequenceKeypoint.new(1,1,0)})
+		windsnow.Lifetime = NumberRange.new(8,14)
+		windsnow.Speed = NumberRange.new(8,18)
+		windsnow.Rotation = NumberRange.new(110)
+		windsnow.SpreadAngle = Vector2.new(35,35)
+		windsnow.Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.039760299026966,1.3114800453186,0.32786899805069),NumberSequenceKeypoint.new(0.7554469704628,0.98360699415207,0.44038599729538),NumberSequenceKeypoint.new(1,0,0)})
+		windsnow.Parent = snowpart
+		repeat
+			task.wait()
+			if lplr.Character.Humanoid.Health > 0 then 
+				snowpart.Position = lplr.Character.HumanoidRootPart.Position + Vector3.new(0, 100, 0)
+			end
+		until lplr.Character.Parent == nil
+	end)
 end)
 
 local win = lib:CreateWindow({
