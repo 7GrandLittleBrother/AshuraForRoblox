@@ -53,21 +53,6 @@ local function runcode(func)
 	func()
 end
 
-local function GetNearestPlayer(maxdist)
-	local obj = lplr
-	local dist = math.huge
-	for i,v in pairs(game:GetService("Players"):GetChildren()) do
-		if v.Team ~= lplr.Team and v ~= lplr and isAlive(v, true) and isAlive(lplr, true) and v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
-			local mag = (v.Character.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude
-			if (mag < dist) and (mag < maxdist) then
-				dist = mag
-				obj = v
-			end
-		end
-	end
-	return obj
-end
-
 local function getCurrentSword()
 	local sword, swordslot, swordrank = nil, nil, 0
 	for i5, v5 in pairs(getCurrentInventory().items) do
@@ -253,26 +238,31 @@ end)
 runcode(function()
 	local KillAuraRange = {["Value"] = 18}
 	local KillAura = {["Enabled"] = false}
-	local function killaura()
-		local plr = GetNearestPlayer(18)
-		local killauraattackremote = Client:Get(modules.AttackRemote)
-		local selfpos = lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, plr.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
-		local sword = getCurrentSword()
-			modules.SwordController.lastAttack = (game:GetService("Workspace"):GetServerTimeNow() - 0.11)
-			killauraattackremote:SendToServer({
-				["weapon"] = sword ~= nil and sword.tool,
-				["entityInstance"] = plr.Character,
-				["validate"] = {
-					["raycast"] = {
-						["cameraPosition"] = hashvec(cam.CFrame.Position),
-						["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, plr.Character.CFrame.Position).Unit.Direction)
-					},
-					["targetPosition"] = hashvec(plr.Character.CFrame.Position),
-					["selfPosition"] = hashvec(selfpos)
-				},
-				["chargedAttack"] = {["chargeRatio"] = 0}
-			})
-			setclipboard(plr.Name)
+	local killauraremote = Client:Get(modules.AttackRemote)
+	function killaura()
+		for i,v in pairs(game.Players:GetChildren()) do
+			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
+				local mag = (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+				if mag <= KillAuraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team and v.Character:FindFirstChild("Humanoid") then
+					if v.Character.Humanoid.Health > 0 then
+						local sword = getCurrentSword()
+						killauraremote:SendToServer({
+							["weapon"] = sword ~= nil and sword.tool,
+							["entityInstance"] = v.Character,
+							["validate"] = {
+								["raycast"] = {
+									["cameraPosition"] = hashvec(cam.CFrame.Position),
+									["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, v.Character:GetPrimaryPartCFrame().Position).Unit.Direction)
+								},
+								["targetPosition"] = hashvec(v.Character:GetPrimaryPartCFrame().Position),
+								["selfPosition"] = hashvec(lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0)))
+							},
+							["chargedAttack"] = {["chargeRatio"] = 0}
+						})
+					end
+				end
+			end
+		end
 	end
 	Sections["KillAura"].NewToggle({
 		["Name"] = "KillAura",
