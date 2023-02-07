@@ -11,10 +11,14 @@ local KnitClient = debug.getupvalue(require(lplr.PlayerScripts.TS.knit).setup, 6
 local Client = require(game:GetService("ReplicatedStorage").TS.remotes).default.Client
 local modules = {}
 
+local function isAlive(plr, alivecheck)
+	if plr then
+		return plr and plr.Character and plr.Character.Parent ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("Humanoid")
+	end
+end
+
 local function hashvec(vec)
-	return {
-		value = vec
-	}
+	return {value = vec}
 end
 
 local function getremote(tab)
@@ -48,7 +52,7 @@ local function getCurrentSword()
 	local sword, swordslot, swordrank = nil, nil, 0
 	for i5, v5 in pairs(inventory.items) do
 		if v5.itemType:lower():find("sword") or v5.itemType:lower():find("blade") or v5.itemType:lower():find("dao") then
-			if modules.ItemMeta[v5.itemType].sword.damage > swordrank then
+			if swordrank == nil or modules.ItemMeta[v5.itemType].sword.damage > swordrank then
 				sword = v5
 				swordslot = i5
 				swordrank = modules.ItemMeta[v5.itemType].sword.damage
@@ -222,5 +226,53 @@ runcode(function()
 			end
 		end,
 		["Info"] = "Set sprint to true."
+	})
+end)
+
+runcode(function()
+	local KillAuraRange = {["Value"] = 18}
+	local KillAura = {["Enabled"] = false}
+	local KillAuraRelRemote = Client:Get(modules.AttackRemote)
+	local function killaura()
+		for i,plr in pairs(players:GetChildren()) do
+			if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+				local root = plr.Character.HumanoidRootPart
+				local sword = getCurrentSword()
+				local selfrootpos = lplr.Character.HumanoidRootPart.Position
+				local selfpos = selfrootpos + (KillAuraRange["Value"] > 14 and (selfrootpos - root.Position).Magnitude > 14 and (CFrame.lookAt(selfrootpos, root.Position).lookVector * 4) or Vector3.zero)
+				if (root.Position - selfrootpos).Magnitude <= KillAuraRange["Value"] and plr.Team ~= lplr.Team then
+					if plr and isAlive(plr, true) then
+						if sword ~= nil then
+							KillAuraRelRemote:FireServer({
+								["weapon"] = sword.tool,
+								["entityInstance"] = plr.Character,
+								["validate"] = {
+									["raycast"] = {
+										["cameraPosition"] = hashvec(cam.CFrame.Position), 
+										["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, root.Position).Unit.Direction)
+									},
+									["targetPosition"] = hashvec(root.Position),
+									["selfPosition"] = hashvec(selfpos)
+								},
+								["chargedAttack"] = {chargeRatio = 0}
+							})
+						end
+					end
+				end
+			end
+		end
+	end
+	Sections["KillAura"].NewToggle({
+		["Name"] = "KillAura",
+		["Function"] = function(callback)
+			KillAura["Enabled"] = callback
+			if KillAura["Enabled"] then
+				repeat
+					task.wait()
+					killaura()
+				until (not KillAura["Enabled"])
+			end
+		end,
+		["Info"] = "Attack players/enemies that are near."
 	})
 end)
