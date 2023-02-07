@@ -21,7 +21,7 @@ local function hashvec(vec)
 	return {value = vec}
 end
 
-local function getremote(tab)
+local getremote = function(tab)
 	for i,v in pairs(tab) do
 		if v == "Client" then
 			return tab[i + 1]
