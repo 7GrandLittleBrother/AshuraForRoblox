@@ -258,10 +258,9 @@ runcode(function()
 		local killauraattackremote = Client:Get(modules.AttackRemote)
 		local selfpos = lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, plr.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
 		local sword = getCurrentSword()
-		if sword ~= nil then
 			modules.SwordController.lastAttack = (game:GetService("Workspace"):GetServerTimeNow() - 0.11)
-			killauraattackremote:FireServer({
-				["weapon"] = sword.tool,
+			killauraattackremote:SendToServer({
+				["weapon"] = sword ~= nil and sword.tool,
 				["entityInstance"] = plr.Character,
 				["validate"] = {
 					["raycast"] = {
@@ -273,7 +272,7 @@ runcode(function()
 				},
 				["chargedAttack"] = {["chargeRatio"] = 0}
 			})
-		end
+			setclipboard(plr.Name)
 	end
 	Sections["KillAura"].NewToggle({
 		["Name"] = "KillAura",
