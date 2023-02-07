@@ -144,7 +144,7 @@ task.spawn(function()
 end)
 
 local win = lib:CreateWindow({
-	["Name"] = "AshuraV1",
+	["Title"] = "AshuraV1",
 	["Theme"] = "BloodTheme"
 })
 
