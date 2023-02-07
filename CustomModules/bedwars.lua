@@ -64,6 +64,7 @@ local function getCurrentSword()
 			end
 		end
 	end
+	return sword, swordslot
 end
 
 task.spawn(function()
@@ -248,10 +249,9 @@ runcode(function()
 				if (root.Position - selfrootpos).Magnitude <= KillAuraRange["Value"] and plr.Team ~= lplr.Team then
 					if plr and isAlive(plr, true) then
 						if sword ~= nil then
-							KillAuraRelRemote:SendToServer({
+							KillAuraRelRemote:FireServer({
 								["weapon"] = sword.tool,
 								["entityInstance"] = plr.Character,
-								["chargedAttack"] = {chargeRatio = 0},
 								["validate"] = {
 									["raycast"] = {
 										["cameraPosition"] = hashvec(cam.CFrame.Position), 
@@ -259,7 +259,8 @@ runcode(function()
 									},
 									["targetPosition"] = hashvec(root.Position),
 									["selfPosition"] = hashvec(selfpos)
-								}
+								},
+								["chargedAttack"] = {chargeRatio = 0}
 							})
 						end
 					end
