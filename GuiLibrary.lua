@@ -1,3 +1,4 @@
+-- // recoded by kenzu because yes
 local GuiLibrary = {}
 
 local tween = game:GetService("TweenService")
@@ -148,7 +149,7 @@ function GuiLibrary:ToggleWindow()
 end
 
 function GuiLibrary:CreateWindow(argstable)
-	local kavName = argstable["Name"]
+	local kavName = argstable["Title"]
 	local themeList = argstable["Theme"]
 	if not themeList then
 		themeList = themes
@@ -1916,7 +1917,7 @@ function GuiLibrary:CreateWindow(argstable)
 			function Elements.NewKeybind(keytext, keyinf, first, callback, argstable)
 				local keytext = argstable["Name"]
 				local keyinf = argstable["Info"]
-				local first = argstable["KeyBind"]
+				local first = argstable["Keybind"]
 				local callback = argstable["Function"]
 				local oldKey = first.Name
 				local keybindElement = Instance.new("TextButton")
