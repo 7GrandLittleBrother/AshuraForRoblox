@@ -248,9 +248,10 @@ runcode(function()
 				if (root.Position - selfrootpos).Magnitude <= KillAuraRange["Value"] and plr.Team ~= lplr.Team then
 					if plr and isAlive(plr, true) then
 						if sword ~= nil then
-							KillAuraRelRemote:FireServer({
+							KillAuraRelRemote:SendToServer({
 								["weapon"] = sword.tool,
 								["entityInstance"] = plr.Character,
+								["chargedAttack"] = {chargeRatio = 0},
 								["validate"] = {
 									["raycast"] = {
 										["cameraPosition"] = hashvec(cam.CFrame.Position), 
@@ -258,8 +259,7 @@ runcode(function()
 									},
 									["targetPosition"] = hashvec(root.Position),
 									["selfPosition"] = hashvec(selfpos)
-								},
-								["chargedAttack"] = {chargeRatio = 0}
+								}
 							})
 						end
 					end
