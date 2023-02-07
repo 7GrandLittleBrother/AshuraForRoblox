@@ -41,7 +41,7 @@ modules = {
 
 function getCurrentInventory(plr)
 	local plr = plr or lplr
-	local thing, thingtwo = pcall(function() return InventoryUtil.getInventory(plr) end)
+	local thing, thingtwo = pcall(function() return modules.InventoryUtil.getInventory(plr) end)
 	return (thing and thingtwo or {
 		items = {},
 		armor = {},
