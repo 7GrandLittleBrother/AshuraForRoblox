@@ -32,17 +32,22 @@ end
 
 modules = {
 	AttackRemote = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.SwordController)["attackEntity"])),
+	InventoryUtil = require(game:GetService("ReplicatedStorage").TS.inventory["inventory-util"]).InventoryUtil,
 	ItemMeta = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.item["item-meta"]).getItemMeta, 1),
 	KnockbackUtil = require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil,
 	SprintCont = KnitClient.Controllers.SprintController,
 	SwordController = KnitClient.Controllers.SwordController
 }
 
-local inventory = {
-	["items"] = {},
-	["armor"] = {},
-	["hand"] = nil
-}
+function getCurrentInventory(plr)
+	local plr = plr or lplr
+	local thing, thingtwo = pcall(function() return InventoryUtil.getInventory(plr) end)
+	return (thing and thingtwo or {
+		items = {},
+		armor = {},
+		hand = nil
+	})
+end
 
 local function runcode(func)
 	func()
@@ -50,7 +55,7 @@ end
 
 local function getCurrentSword()
 	local sword, swordslot, swordrank = nil, nil, 0
-	for i5, v5 in pairs(inventory.items) do
+	for i5, v5 in pairs(getCurrentInventory().items) do
 		if v5.itemType:lower():find("sword") or v5.itemType:lower():find("blade") or v5.itemType:lower():find("dao") then
 			if swordrank == nil or modules.ItemMeta[v5.itemType].sword.damage > swordrank then
 				sword = v5
@@ -136,7 +141,7 @@ task.spawn(function()
 		windsnow.Parent = snowpart
 		repeat
 			task.wait()
-			if lplr.Character.Humanoid.Health > 0 then 
+			if isAlive(lplr, true) then 
 				snowpart.Position = lplr.Character.HumanoidRootPart.Position + Vector3.new(0, 100, 0)
 			end
 		until lplr.Character.Parent == nil
