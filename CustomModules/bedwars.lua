@@ -2,7 +2,7 @@
 	Credits:
 	Vape - Winter Sky
 ]]
-local lib = shared.GuiLibrary
+local GuiLibrary = shared.GuiLibrary
 
 local players = game:GetService("Players")
 local lplr = players.LocalPlayer
@@ -31,7 +31,7 @@ local getremote = function(tab)
 end
 
 modules = {
-	AttackRemote = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.SwordController)["attackEntity"])),
+	AttackRemote = getremote(debug.getconstants((KnitClient.Controllers.SwordController).attackEntity)),
 	InventoryUtil = require(game:GetService("ReplicatedStorage").TS.inventory["inventory-util"]).InventoryUtil,
 	ItemMeta = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.item["item-meta"]).getItemMeta, 1),
 	KnockbackUtil = require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil,
@@ -51,6 +51,21 @@ end
 
 local function runcode(func)
 	func()
+end
+
+local function GetNearestPlayer(maxdist)
+	local obj = lplr
+	local dist = math.huge
+	for i,v in pairs(game:GetService("Players"):GetChildren()) do
+		if v.Team ~= lplr.Team and v ~= lplr and isAlive(v, true) and isAlive(lplr, true) and v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
+			local mag = (v.Character.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude
+			if (mag < dist) and (mag < maxdist) then
+				dist = mag
+				obj = v
+			end
+		end
+	end
+	return obj
 end
 
 local function getCurrentSword()
@@ -149,7 +164,7 @@ task.spawn(function()
 	end)
 end)
 
-local win = lib:CreateWindow({
+local win = GuiLibrary:CreateWindow({
 	["Title"] = "AshuraV1",
 	["Theme"] = "BloodTheme"
 })
@@ -238,34 +253,26 @@ end)
 runcode(function()
 	local KillAuraRange = {["Value"] = 18}
 	local KillAura = {["Enabled"] = false}
-	local KillAuraRelRemote = Client:Get(modules.AttackRemote)
 	local function killaura()
-		for i,plr in pairs(players:GetChildren()) do
-			if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-				local root = plr.Character.HumanoidRootPart
-				local sword = getCurrentSword()
-				local selfrootpos = lplr.Character.HumanoidRootPart.Position
-				local selfpos = selfrootpos + (KillAuraRange["Value"] > 14 and (selfrootpos - root.Position).Magnitude > 14 and (CFrame.lookAt(selfrootpos, root.Position).lookVector * 4) or Vector3.zero)
-				if (root.Position - selfrootpos).Magnitude <= KillAuraRange["Value"] and plr.Team ~= lplr.Team then
-					if plr and isAlive(plr, true) then
-						if sword ~= nil then
-							KillAuraRelRemote:FireServer({
-								["weapon"] = sword.tool,
-								["entityInstance"] = plr.Character,
-								["validate"] = {
-									["raycast"] = {
-										["cameraPosition"] = hashvec(cam.CFrame.Position), 
-										["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, root.Position).Unit.Direction)
-									},
-									["targetPosition"] = hashvec(root.Position),
-									["selfPosition"] = hashvec(selfpos)
-								},
-								["chargedAttack"] = {chargeRatio = 0}
-							})
-						end
-					end
-				end
-			end
+		local plr = GetNearestPlayer(18)
+		local killauraattackremote = Client:Get(modules.AttackRemote)
+		local selfpos = lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, plr.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
+		local sword = getCurrentSword()
+		if sword ~= nil then
+			modules.SwordController.lastAttack = (game:GetService("Workspace"):GetServerTimeNow() - 0.11)
+			killauraattackremote:FireServer({
+				["weapon"] = sword.tool,
+				["entityInstance"] = plr.Character,
+				["validate"] = {
+					["raycast"] = {
+						["cameraPosition"] = hashvec(cam.CFrame.Position),
+						["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, plr.Character.CFrame.Position).Unit.Direction)
+					},
+					["targetPosition"] = hashvec(plr.Character.CFrame.Position),
+					["selfPosition"] = hashvec(selfpos)
+				},
+				["chargedAttack"] = {["chargeRatio"] = 0}
+			})
 		end
 	end
 	Sections["KillAura"].NewToggle({
