@@ -1,6 +1,8 @@
 --[[
-	Credits:
+	Credits
 	Vape - Winter Sky
+	Vape - RunLoops
+	Please notify me if you need credits
 ]]
 local GuiLibrary = shared.GuiLibrary
 
@@ -208,7 +210,7 @@ local Sections = {
 	["AntiKnockBack"] = Tabs["Combat"].NewSection("AntiKnockBack"),
 	["NoClickDelay"] = Tabs["Combat"].NewSection("NoClickDelay"),
 	["Sprint"] = Tabs["Combat"].NewSection("Sprint"),
-	["KillAura"] = Tabs["Blatant"].NewSection("KillAura")
+	["Killaura"] = Tabs["Blatant"].NewSection("Killaura")
 }
 
 runcode(function()
@@ -278,16 +280,16 @@ runcode(function()
 end)
 
 runcode(function()
-	local KillAuraRange = {["Value"] = 18}
-	local KillAura = {["Enabled"] = false}
+	local KillauraRange = {["Value"] = 18}
+	local Killaura = {["Enabled"] = false}
 	local killauraremote = Client:Get(modules.AttackRemote)
 	function killaura()
 		for i,v in pairs(game.Players:GetChildren()) do
 			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
 				local mag = (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-				if mag <= KillAuraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team and v.Character:FindFirstChild("Humanoid") then
+				if mag <= KillauraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team and v.Character:FindFirstChild("Humanoid") then
 					if v.Character.Humanoid.Health > 0 then
-						local selfpos = lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
+						local selfpos = lplr.Character.HumanoidRootPart.Position + (KillauraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
 						local sword = getCurrentSword()
 						killauraremote:SendToServer({
 							["weapon"] = sword ~= nil and sword.tool,
@@ -307,11 +309,11 @@ runcode(function()
 			end
 		end
 	end
-	Sections["KillAura"].NewToggle({
-		["Name"] = "KillAura",
+	Sections["Killaura"].NewToggle({
+		["Name"] = "Killaura",
 		["Function"] = function(callback)
-			KillAura["Enabled"] = callback
-			if KillAura["Enabled"] then
+			Killaura["Enabled"] = callback
+			if Killaura["Enabled"] then
 				RunLoops:BindToHeartbeat("Killaura", 1, function()
 					killaura()
 				end)
