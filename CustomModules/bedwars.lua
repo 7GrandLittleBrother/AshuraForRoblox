@@ -73,7 +73,7 @@ local getremote = function(tab)
 end
 
 modules = {
-	AttackRemote = getremote(debug.getconstants((KnitClient.Controllers.SwordController).attackEntity)),
+	AttackRemote = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.SwordController)["attackEntity"])),
 	InventoryUtil = require(game:GetService("ReplicatedStorage").TS.inventory["inventory-util"]).InventoryUtil,
 	ItemMeta = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.item["item-meta"]).getItemMeta, 1),
 	KnockbackUtil = require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil,
@@ -280,7 +280,7 @@ end)
 runcode(function()
 	local KillAuraRange = {["Value"] = 18}
 	local KillAura = {["Enabled"] = false}
-	local killauraremote = Client:Get(modules.AttackRemote)
+	local killauraremote = Client:Get(modules.AttackRemote)["instance"]
 	function killaura()
 		for i,v in pairs(game.Players:GetChildren()) do
 			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -291,6 +291,7 @@ runcode(function()
 						local sword = getCurrentSword()
 						killauraremote:FireServer({
 							["weapon"] = sword ~= nil and sword.tool,
+							["chargedAttack"] = {["chargeRatio"] = 0}
 							["entityInstance"] = v.Character,
 							["validate"] = {
 								["raycast"] = {
@@ -299,8 +300,7 @@ runcode(function()
 								},
 								["targetPosition"] = hashvec(v.Character.HumanoidRootPart.CFrame.Position),
 								["selfPosition"] = hashvec(selfpos)
-							},
-							["chargedAttack"] = {["chargeRatio"] = 0}
+							}
 						})
 					end
 				end
