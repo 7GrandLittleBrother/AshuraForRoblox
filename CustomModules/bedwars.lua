@@ -336,7 +336,7 @@ runcode(function()
 				task.spawn(function()
 					repeat
 						task.wait()
-						Client:Get("GroundHit"):FireServer()
+						Client:Get("GroundHit"):SendToServer()
 					until (not NoFall["Enabled"])
 				end)
 			end
