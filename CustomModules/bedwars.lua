@@ -73,7 +73,7 @@ local getremote = function(tab)
 end
 
 modules = {
-	AttackRemote = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.SwordController)["attackEntity"])),
+	AttackRemote = getremote(debug.getconstants((KnitClient.Controllers.SwordController).attackEntity)),
 	InventoryUtil = require(game:GetService("ReplicatedStorage").TS.inventory["inventory-util"]).InventoryUtil,
 	ItemMeta = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.item["item-meta"]).getItemMeta, 1),
 	KnockbackUtil = require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil,
@@ -280,7 +280,7 @@ end)
 runcode(function()
 	local KillAuraRange = {["Value"] = 18}
 	local KillAura = {["Enabled"] = false}
-	local killauraremote = Client:Get(modules.AttackRemote)["instance"]
+	local killauraremote = Client:Get(modules.AttackRemote)
 	function killaura()
 		for i,v in pairs(game.Players:GetChildren()) do
 			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -289,9 +289,8 @@ runcode(function()
 					if v.Character.Humanoid.Health > 0 then
 						local selfpos = lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
 						local sword = getCurrentSword()
-						killauraremote:FireServer({
+						killauraremote:SendToServer({
 							["weapon"] = sword ~= nil and sword.tool,
-							["chargedAttack"] = {["chargeRatio"] = 0}
 							["entityInstance"] = v.Character,
 							["validate"] = {
 								["raycast"] = {
@@ -300,7 +299,8 @@ runcode(function()
 								},
 								["targetPosition"] = hashvec(v.Character.HumanoidRootPart.CFrame.Position),
 								["selfPosition"] = hashvec(selfpos)
-							}
+							},
+							["chargedAttack"] = {["chargeRatio"] = 0}
 						})
 					end
 				end
@@ -319,6 +319,6 @@ runcode(function()
 				RunLoops:UnbindFromHeartbeat("Killaura")
 			end
 		end,
-		["Info"] = "Attack players/enemies around you."
+		["Info"] = "Attack players/enemies that are near."
 	})
 end)
