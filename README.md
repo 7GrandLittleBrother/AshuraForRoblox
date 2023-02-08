@@ -1,4 +1,2 @@
-AshuraV4 was built for mobile users to hacks in bedwars
-
-Made by: Ashura
-Open Source
+# Vape V4
+**A script that I have maintained for 5 years, mostly known for bedwars.**
