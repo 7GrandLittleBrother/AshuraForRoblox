@@ -194,7 +194,7 @@ task.spawn(function()
 end)
 
 local win = GuiLibrary:CreateWindow({
-	["Title"] = "AshuraV1",
+	["Title"] = "Ashura V1",
 	["Theme"] = "BloodTheme"
 })
 
@@ -210,7 +210,8 @@ local Sections = {
 	["AntiKnockBack"] = Tabs["Combat"].NewSection("AntiKnockBack"),
 	["NoClickDelay"] = Tabs["Combat"].NewSection("NoClickDelay"),
 	["Sprint"] = Tabs["Combat"].NewSection("Sprint"),
-	["Killaura"] = Tabs["Blatant"].NewSection("Killaura")
+	["Killaura"] = Tabs["Blatant"].NewSection("Killaura"),
+	["NoFall"] = Tabs["Blatant"].NewSection("NoFall")
 }
 
 runcode(function()
@@ -322,5 +323,24 @@ runcode(function()
 			end
 		end,
 		["Info"] = "Attack players/enemies that are near."
+	})
+end)
+
+runcode(function()
+	local NoFall = {["Enabled"] = false}
+	Sections["NoFall"].NewToggle({
+		["Name"] = "NoFall",
+		["Function"] = function(callback)
+			NoFall["Enabled"] = callback
+			if NoFall["Enabled"] then
+				task.spawn(function()
+					repeat
+						task.wait()
+						Client:Get("GroundHit"):FireServer()
+					until (not NoFall["Enabled"])
+				end)
+			end
+		end,
+		["Info"] = "Prevents taking fall damage."
 	})
 end)
