@@ -17,6 +17,48 @@ local function isAlive(plr, alivecheck)
 	end
 end
 
+local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
+do
+	function RunLoops:BindToRenderStep(name, num, func)
+		if RunLoops.RenderStepTable[name] == nil then
+			RunLoops.RenderStepTable[name] = game:GetService("RunService").RenderStepped:Connect(func)
+		end
+	end
+
+	function RunLoops:UnbindFromRenderStep(name)
+		if RunLoops.RenderStepTable[name] then
+			RunLoops.RenderStepTable[name]:Disconnect()
+			RunLoops.RenderStepTable[name] = nil
+		end
+	end
+
+	function RunLoops:BindToStepped(name, num, func)
+		if RunLoops.StepTable[name] == nil then
+			RunLoops.StepTable[name] = game:GetService("RunService").Stepped:Connect(func)
+		end
+	end
+
+	function RunLoops:UnbindFromStepped(name)
+		if RunLoops.StepTable[name] then
+			RunLoops.StepTable[name]:Disconnect()
+			RunLoops.StepTable[name] = nil
+		end
+	end
+
+	function RunLoops:BindToHeartbeat(name, num, func)
+		if RunLoops.HeartTable[name] == nil then
+			RunLoops.HeartTable[name] = game:GetService("RunService").Heartbeat:Connect(func)
+		end
+	end
+
+	function RunLoops:UnbindFromHeartbeat(name)
+		if RunLoops.HeartTable[name] then
+			RunLoops.HeartTable[name]:Disconnect()
+			RunLoops.HeartTable[name] = nil
+		end
+	end
+end
+
 local function hashvec(vec)
 	return {value = vec}
 end
@@ -245,17 +287,18 @@ runcode(function()
 				local mag = (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
 				if mag <= KillAuraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team and v.Character:FindFirstChild("Humanoid") then
 					if v.Character.Humanoid.Health > 0 then
+						local selfpos = lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
 						local sword = getCurrentSword()
-						killauraremote:SendToServer({
+						killauraremote:FireServer({
 							["weapon"] = sword ~= nil and sword.tool,
 							["entityInstance"] = v.Character,
 							["validate"] = {
 								["raycast"] = {
 									["cameraPosition"] = hashvec(cam.CFrame.Position),
-									["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, v.Character:GetPrimaryPartCFrame().Position).Unit.Direction)
+									["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, v.Character.HumanoidRootPart.CFrame.Position).Unit.Direction)
 								},
-								["targetPosition"] = hashvec(v.Character:GetPrimaryPartCFrame().Position),
-								["selfPosition"] = hashvec(lplr.Character.HumanoidRootPart.Position + (KillAuraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0)))
+								["targetPosition"] = hashvec(v.Character.HumanoidRootPart.CFrame.Position),
+								["selfPosition"] = hashvec(selfpos)
 							},
 							["chargedAttack"] = {["chargeRatio"] = 0}
 						})
@@ -269,12 +312,13 @@ runcode(function()
 		["Function"] = function(callback)
 			KillAura["Enabled"] = callback
 			if KillAura["Enabled"] then
-				repeat
-					task.wait()
+				RunLoops:BindToHeartbeat("Killaura", 1, function()
 					killaura()
-				until (not KillAura["Enabled"])
+				end)
+			else
+				RunLoops:UnbindFromHeartbeat("Killaura")
 			end
 		end,
-		["Info"] = "Attack players/enemies that are near."
+		["Info"] = "Attack players/enemies around you."
 	})
 end)
