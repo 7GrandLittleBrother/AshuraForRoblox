@@ -86,6 +86,7 @@ runcode(function()
 		BlockEngine = require(lplr.PlayerScripts.TS.lib["block-engine"]["client-block-engine"]).ClientBlockEngine,
 		ClientHandler = Client,
 		getCurrentInventory = function(plr)
+			local plr = plr or lplr
 			local suc, result = pcall(function()
 				return InventoryUtil.getInventory(plr)
 			end)
