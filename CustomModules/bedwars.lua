@@ -86,7 +86,6 @@ runcode(function()
 		BlockEngine = require(lplr.PlayerScripts.TS.lib["block-engine"]["client-block-engine"]).ClientBlockEngine,
 		ClientHandler = Client,
 		getCurrentInventory = function(plr)
-			local plr = plr or lplr
 			local suc, result = pcall(function()
 				return InventoryUtil.getInventory(plr)
 			end)
@@ -105,7 +104,7 @@ end)
 
 local function getCurrentSword()
 	local sword, swordslot, swordrank = nil, nil, 0
-	for i5, v5 in pairs(modules.getCurrentInventory.items) do
+	for i5, v5 in pairs(modules.getCurrentInventory(lplr).items) do
 		if v5.itemType:lower():find("sword") or v5.itemType:lower():find("blade") or v5.itemType:lower():find("dao") then
 			if modules.ItemMeta[v5.itemType].sword.damage > swordrank then
 				sword = v5
