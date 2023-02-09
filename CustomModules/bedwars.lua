@@ -84,6 +84,7 @@ runcode(function()
 		BlockController = require(game:GetService("ReplicatedStorage")["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out).BlockEngine,
 		BlockController2 = require(game:GetService("ReplicatedStorage")["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out.client.placement["block-placer"]).BlockPlacer,
 		BlockEngine = require(lplr.PlayerScripts.TS.lib["block-engine"]["client-block-engine"]).ClientBlockEngine,
+		ClientHandler = Client,
 		getCurrentInventory = function(plr)
 			local suc, result = pcall(function()
 				return InventoryUtil.getInventory(plr)
@@ -287,7 +288,7 @@ end)
 runcode(function()
 	local KillauraRange = {["Value"] = 18}
 	local Killaura = {["Enabled"] = false}
-	local killauraremote = Client:Get(modules.AttackRemote)
+	local killauraremote = modules.ClientHandler:Get(modules.AttackRemote)
 	function killaura()
 		for i,v in pairs(game.Players:GetChildren()) do
 			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -330,10 +331,6 @@ runcode(function()
 	})
 end)
 
-runcoe(function()
-	
-end)
-
 runcode(function()
 	local NoFall = {["Enabled"] = false}
 	Sections["NoFall"].NewToggle({
@@ -344,7 +341,7 @@ runcode(function()
 				task.spawn(function()
 					repeat
 						task.wait()
-						Client:Get("GroundHit"):SendToServer()
+						modules.ClientHandler:Get("GroundHit"):SendToServer()
 					until (not NoFall["Enabled"])
 				end)
 			end
