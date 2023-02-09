@@ -9,9 +9,11 @@ local GuiLibrary = shared.GuiLibrary
 local players = game:GetService("Players")
 local lplr = players.LocalPlayer
 local cam = game:GetService("Workspace").CurrentCamera
-local KnitClient = debug.getupvalue(require(lplr.PlayerScripts.TS.knit).setup, 6)
-local Client = require(game:GetService("ReplicatedStorage").TS.remotes).default.Client
 local modules = {}
+
+local function runcode(func)
+	func()
+end
 
 local function isAlive(plr, alivecheck)
 	if plr then
@@ -65,7 +67,7 @@ local function hashvec(vec)
 	return {value = vec}
 end
 
-local getremote = function(tab)
+local function getremote(tab)
 	for i,v in pairs(tab) do
 		if v == "Client" then
 			return tab[i + 1]
@@ -73,35 +75,37 @@ local getremote = function(tab)
 	end
 	return ""
 end
-
-modules = {
-	AttackRemote = getremote(debug.getconstants((KnitClient.Controllers.SwordController).attackEntity)),
-	InventoryUtil = require(game:GetService("ReplicatedStorage").TS.inventory["inventory-util"]).InventoryUtil,
-	ItemMeta = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.item["item-meta"]).getItemMeta, 1),
-	KnockbackUtil = require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil,
-	SprintCont = KnitClient.Controllers.SprintController,
-	SwordController = KnitClient.Controllers.SwordController
-}
-
-function getCurrentInventory(plr)
-	local plr = plr or lplr
-	local thing, thingtwo = pcall(function() return modules.InventoryUtil.getInventory(plr) end)
-	return (thing and thingtwo or {
-		items = {},
-		armor = {},
-		hand = nil
-	})
-end
-
-local function runcode(func)
-	func()
-end
+runcode(function()
+	local KnitClient = debug.getupvalue(require(lplr.PlayerScripts.TS.knit).setup, 6)
+	local Client = require(game:GetService("ReplicatedStorage").TS.remotes).default.Client
+	local InventoryUtil = require(game:GetService("ReplicatedStorage").TS.inventory["inventory-util"]).InventoryUtil
+	modules = {
+		AttackRemote = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.SwordController).attackEntity)),
+		BlockController = require(game:GetService("ReplicatedStorage")["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out).BlockEngine,
+		BlockController2 = require(game:GetService("ReplicatedStorage")["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out.client.placement["block-placer"]).BlockPlacer,
+		BlockEngine = require(lplr.PlayerScripts.TS.lib["block-engine"]["client-block-engine"]).ClientBlockEngine,
+		getCurrentInventory = function(plr)
+			local suc, result = pcall(function()
+				return InventoryUtil.getInventory(plr)
+			end)
+			return (suc and result or {
+				["items"] = {},
+				["armor"] = {},
+				["hand"] = nil
+			})
+		end,
+		ItemMeta = debug.getupvalue(require(game:GetService("ReplicatedStorage").TS.item["item-meta"]).getItemMeta, 1),
+		KnockbackUtil = require(game:GetService("ReplicatedStorage").TS.damage["knockback-util"]).KnockbackUtil,
+		SprintCont = KnitClient.Controllers.SprintController,
+		SwordController = KnitClient.Controllers.SwordController
+	}
+end)
 
 local function getCurrentSword()
 	local sword, swordslot, swordrank = nil, nil, 0
-	for i5, v5 in pairs(getCurrentInventory().items) do
+	for i5, v5 in pairs(modules.getCurrentInventory.items) do
 		if v5.itemType:lower():find("sword") or v5.itemType:lower():find("blade") or v5.itemType:lower():find("dao") then
-			if swordrank == nil or modules.ItemMeta[v5.itemType].sword.damage > swordrank then
+			if modules.ItemMeta[v5.itemType].sword.damage > swordrank then
 				sword = v5
 				swordslot = i5
 				swordrank = modules.ItemMeta[v5.itemType].sword.damage
@@ -324,6 +328,10 @@ runcode(function()
 		end,
 		["Info"] = "Attack players/enemies that are near."
 	})
+end)
+
+runcoe(function()
+	
 end)
 
 runcode(function()
