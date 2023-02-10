@@ -306,7 +306,7 @@ runcode(function()
 			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
 				local mag = (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
 				if mag <= KillauraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team then
-					if isAlive(v) then
+					if isAlive(v, true) then
 						local selfpos = lplr.Character.HumanoidRootPart.Position + (KillauraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
 						local sword = getCurrentSword()
 						killauraremote:SendToServer({
