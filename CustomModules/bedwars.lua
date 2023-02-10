@@ -15,13 +15,6 @@ local function runcode(func)
 	func()
 end
 
-local function isAlive(plr, alivecheck)
-	plr = plr or lplr
-	if plr then
-		return plr and plr.Character and plr.Character.Parent ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("Humanoid") and ((not alivecheck) and plr.Humanoid:GetState() ~= Enum.HumanoidStateType.Dead)
-	end
-end
-
 local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
 do
 	function RunLoops:BindToRenderStep(name, num, func)
@@ -105,7 +98,7 @@ runcode(function()
 end)
 
 local function playAnimation(id) 
-	if isAlive(lplr) then 
+	if lplr.Character.Humanoid.Health > 0 then 
 		local animation = Instance.new("Animation")
 		animation.AnimationId = id
 		local animatior = lplr.Character.Humanoid.Animator
@@ -202,7 +195,7 @@ task.spawn(function()
 		windsnow.Parent = snowpart
 		repeat
 			task.wait()
-			if isAlive(lplr, true) then 
+			if lplr.Character.Humanoid.Health > 0 then 
 				snowpart.Position = lplr.Character.HumanoidRootPart.Position + Vector3.new(0, 100, 0)
 			end
 		until lplr.Character.Parent == nil
@@ -323,9 +316,7 @@ runcode(function()
 							["chargedAttack"] = {["chargeRatio"] = 0}
 						})
 						if not Killauraswing["Enabled"] then
-							if Killaura["Enabled"] then
-								playAnimation("rbxassetid://4947108314")
-							end
+							playAnimation("rbxassetid://4947108314")
 						end
 					end
 				end
