@@ -110,14 +110,14 @@ local function targetCheck(plr, check)
 end
 
 local function isPlayerTargetable(plr, target)
-	return plr ~= lplr and plr and isAlive(plr) and targetCheck(plr, target)
+	return plr.Team ~= lplr.Team and plr and isAlive(plr) and targetCheck(plr, target)
 end
 
 local function GetAllNearestHumanoidToPosition(distance, amount)
 	local returnedplayer = {}
 	local currentamount = 0
 	if isAlive(lplr) then -- alive check
-		for i, v in pairs(game.Players:GetChildren()) do -- loop through players
+		for i,v in pairs(game.Players:GetChildren()) do -- loop through players
 			if isPlayerTargetable((v), true, true, v.Character ~= nil) and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Head") and currentamount < amount then -- checks
 				local mag = (lplr.Character.HumanoidRootPart.Position - v.Character:FindFirstChild("HumanoidRootPart").Position).magnitude
 				if mag <= distance then -- mag check
