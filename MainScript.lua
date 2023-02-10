@@ -9,7 +9,7 @@ local function createnotification(title, text, delay)
 	})
 end
 
-if not shared.AshuraExecuted then
+if shared.AshuraExecuted then
 	createnotification("AshuraClient", "Ashura Already Injected", 5)
 else
 	shared.AshuraExecuted = true
