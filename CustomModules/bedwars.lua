@@ -386,7 +386,7 @@ runcode(function()
 			Killaura["Enabled"] = callback
 			if Killaura["Enabled"] then
 				RunLoops:BindToHeartbeat("Killaura", 1, function()
-					local plrs = GetAllNearestHumanoidToPosition(KillauraRange["Value"] - 0.0001)
+					local plrs = GetAllNearestHumanoidToPosition(KillauraRange["Value"] - 0.0001, 1)
 					for i,plr in pairs(plrs) do
 						task.spawn(attackEntity, plr)
 					end
