@@ -11,6 +11,7 @@ end
 
 if shared.AshuraExecuted then
 	createnotification("AshuraClient", "Ashura Already Injected", 5)
+	return
 else
 	shared.AshuraExecuted = true
 end
