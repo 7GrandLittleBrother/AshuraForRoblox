@@ -16,8 +16,9 @@ local function runcode(func)
 end
 
 local function isAlive(plr, alivecheck)
+	plr = plr or lplr
 	if plr then
-		return plr and plr.Character and plr.Character.Parent ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("Humanoid")
+		return plr and plr.Character and plr.Character.Parent ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("Humanoid") and ((not alivecheck) and plr.Humanoid:GetState() ~= Enum.HumanoidStateType.Dead)
 	end
 end
 
@@ -102,6 +103,15 @@ runcode(function()
 		SwordController = KnitClient.Controllers.SwordController
 	}
 end)
+
+local function playAnimation(id) 
+	if isAlive(lplr) then 
+		local animation = Instance.new("Animation")
+		animation.AnimationId = id
+		local animatior = lplr.Character.Humanoid.Animator
+		animatior:LoadAnimation(animation):Play()
+	end
+end
 
 local function getCurrentSword()
 	local sword, swordslot, swordrank = nil, nil, 0
@@ -287,6 +297,7 @@ runcode(function()
 end)
 
 runcode(function()
+	local Killauraswing = {["Enabled"] = false}
 	local KillauraRange = {["Value"] = 18}
 	local Killaura = {["Enabled"] = false}
 	local killauraremote = modules.ClientHandler:Get(modules.AttackRemote)
@@ -294,8 +305,8 @@ runcode(function()
 		for i,v in pairs(game.Players:GetChildren()) do
 			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
 				local mag = (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-				if mag <= KillauraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team and v.Character:FindFirstChild("Humanoid") then
-					if v.Character.Humanoid.Health > 0 then
+				if mag <= KillauraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team then
+					if isAlive(v) then
 						local selfpos = lplr.Character.HumanoidRootPart.Position + (KillauraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
 						local sword = getCurrentSword()
 						killauraremote:SendToServer({
@@ -311,6 +322,11 @@ runcode(function()
 							},
 							["chargedAttack"] = {["chargeRatio"] = 0}
 						})
+						if not Killauraswing["Enabled"] then
+							if Killaura["Enabled"] then
+								playAnimation("rbxassetid://4947108314")
+							end
+						end
 					end
 				end
 			end
@@ -330,6 +346,13 @@ runcode(function()
 		end,
 		["Info"] = "Attack players/enemies that are near."
 	})
+	Sections["Killaura"].NewToggle({
+		["Name"] = " No Swing",
+		["Function"] = function(callback)
+			Killauraswing["Enabled"] = callback
+		end,
+		["Info"] = "Removes the swinging animation."
+	})
 end)
 
 runcode(function()
@@ -342,7 +365,7 @@ runcode(function()
 				task.spawn(function()
 					repeat
 						task.wait()
-						modules.ClientHandler:Get("GroundHit"):SendToServer()
+						game:GetService("ReplicatedStorage").rbxts_include.node_modules["@rbxts"].net.out._NetManaged.GroundHit:FireServer()
 					until (not NoFall["Enabled"])
 				end)
 			end
