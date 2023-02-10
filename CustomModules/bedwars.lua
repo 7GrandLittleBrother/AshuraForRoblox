@@ -105,19 +105,38 @@ runcode(function()
 	}
 end)
 
-local function getNearestPlayer(maxdist)
-	local obj = lplr
-	local dist = math.huge
-	for i,v in pairs(game:GetService("Players"):GetChildren()) do
-		if v.Team ~= lplr.Team and v ~= lplr and isAlive(v) and isAlive(lplr) and v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
-			local mag = (v.Character.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude
-			if (mag < dist) and (mag < maxdist) then
-				dist = mag
-				obj = v
+local function targetCheck(plr, check)
+	return (check and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("ForceField") == nil or check == false)
+end
+
+local function isPlayerTargetable(plr, target)
+	return plr ~= lplr and plr and isAlive(plr) and targetCheck(plr, target)
+end
+
+local function GetAllNearestHumanoidToPosition(distance, amount)
+	local returnedplayer = {}
+	local currentamount = 0
+	if isAlive(lplr) then -- alive check
+		for i, v in pairs(game.Players:GetChildren()) do -- loop through players
+			if isPlayerTargetable((v), true, true, v.Character ~= nil) and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Head") and currentamount < amount then -- checks
+				local mag = (lplr.Character.HumanoidRootPart.Position - v.Character:FindFirstChild("HumanoidRootPart").Position).magnitude
+				if mag <= distance then -- mag check
+					table.insert(returnedplayer, v)
+					currentamount = currentamount + 1
+				end
+			end
+		end
+		for i2,v2 in pairs(game:GetService("CollectionService"):GetTagged("Monster")) do -- monsters
+			if v2:FindFirstChild("HumanoidRootPart") and currentamount < amount and v2.Name ~= "Duck" then -- no duck
+				local mag = (lplr.Character.HumanoidRootPart.Position - v2.HumanoidRootPart.Position).magnitude
+				if mag <= distance then -- magcheck
+					table.insert(returnedplayer, {Name = (v2 and v2.Name or "Monster"), UserId = 1443379645, Character = v2}) -- monsters are npcs so I have to create a fake player for target info
+					currentamount = currentamount + 1
+				end
 			end
 		end
 	end
-	return obj
+	return returnedplayer -- table of attackable entities
 end
 
 local function playSound(id, volume) 
@@ -367,7 +386,7 @@ runcode(function()
 			Killaura["Enabled"] = callback
 			if Killaura["Enabled"] then
 				RunLoops:BindToHeartbeat("Killaura", 1, function()
-					local plrs = getNearestPlayer(KillauraRange["Value"] - 0.0001)
+					local plrs = GetAllNearestHumanoidToPosition(KillauraRange["Value"] - 0.0001)
 					for i,plr in pairs(plrs) do
 						task.spawn(attackEntity, plr)
 					end
