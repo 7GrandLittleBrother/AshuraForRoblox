@@ -294,7 +294,7 @@ runcode(function()
 				modules.KnockbackUtil.applyKnockback = func2
 			end
 		end,
-		["Info"] = "Remove knockbacks."
+		["InfoText"] = "Remove knockbacks."
 	})
 end)
 
@@ -315,7 +315,7 @@ runcode(function()
 				modules.SwordController.isClickingTooFast = func
 			end
 		end,
-		["Info"] = "Bypass cps limit."
+		["InfoText"] = "Bypass cps limit."
 	})
 end)
 
@@ -338,7 +338,7 @@ runcode(function()
 				modules.SprintCont:stopSprinting()
 			end
 		end,
-		["Info"] = "Set sprint to true."
+		["InfoText"] = "Set sprint to true."
 	})
 end)
 
@@ -395,21 +395,21 @@ runcode(function()
 				RunLoops:UnbindFromHeartbeat("Killaura")
 			end
 		end,
-		["Info"] = "Attack players/enemies that are near."
+		["InfoText"] = "Attack players/enemies that are near."
 	})
 	Sections["Killaura"].NewToggle({
 		["Name"] = "No Swing Sound",
 		["Function"] = function(val)
 			Killauraswing["Enabled"] = val
 		end,
-		["Info"] = "Removes the swinging sound."
+		["InfoText"] = "Removes the swinging sound."
 	})
 	Sections["Killaura"].NewToggle({
 		["Name"] = " No Swing",
 		["Function"] = function(val)
 			Killauraswing["Enabled"] = val
 		end,
-		["Info"] = "Removes the swinging animation."
+		["InfoText"] = "Removes the swinging animation."
 	})
 end)
 
@@ -428,6 +428,6 @@ runcode(function()
 				end)
 			end
 		end,
-		["Info"] = "Prevents taking fall damage."
+		["InfoText"] = "Prevents taking fall damage."
 	})
 end)
