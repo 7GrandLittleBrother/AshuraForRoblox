@@ -578,7 +578,7 @@ function GuiLibrary:CreateWindow(argstable)
 			local Elements = {}
 			function Elements.NewButton(bname,tipINf, callback, argstable)
 				local bname = argstable["Name"]
-				local tipINf = argstable["Info"]
+				local tipINf = argstable["InfoText"]
 				local callback = argstable["Function"]
 				showLogo = showLogo or true
 				local ButtonFunction = {}
@@ -779,7 +779,7 @@ function GuiLibrary:CreateWindow(argstable)
 
 			function Elements.NewTextBox(argstable)
 				local tname = argstable["Name"]
-				local tTip = argstable["Info"]
+				local tTip = argstable["InfoText"]
 				local callback = argstable["Function"]
 				local textboxElement = Instance.new("TextButton")
 				local UICorner = Instance.new("UICorner")
@@ -975,7 +975,7 @@ function GuiLibrary:CreateWindow(argstable)
 
 			function Elements.NewToggle(argstable)
 				local tname = argstable["Name"]
-				local nTip = argstable["Info"]
+				local nTip = argstable["InfoText"]
 				local callback = argstable["Function"]
 				local TogFunction = {}
 				local toggled = false
@@ -1224,7 +1224,7 @@ function GuiLibrary:CreateWindow(argstable)
 
 			function Elements.NewSlider(argstable)
 				local slidInf = argstable["Name"]
-				local slidTip = argstable["Info"]
+				local slidTip = argstable["InfoText"]
 				local minvalue = argstable["Min"]
 				local maxvalue = argstable["Max"]
 				local callback = argstable["Function"]
@@ -1468,7 +1468,7 @@ function GuiLibrary:CreateWindow(argstable)
 
 			function Elements.NewDropdown(argstable)
 				local dropname = argstable["Name"]
-				local dropinf = argstable["Info"]
+				local dropinf = argstable["InfoText"]
 				local list = argstable["List"]
 				local callback = argstable["Function"]
 				local DropFunction = {}
@@ -1916,7 +1916,7 @@ function GuiLibrary:CreateWindow(argstable)
 			end
 			function Elements.NewKeybind(keytext, keyinf, first, callback, argstable)
 				local keytext = argstable["Name"]
-				local keyinf = argstable["Info"]
+				local keyinf = argstable["InfoText"]
 				local first = argstable["Keybind"]
 				local callback = argstable["Function"]
 				local oldKey = first.Name
@@ -2130,7 +2130,7 @@ function GuiLibrary:CreateWindow(argstable)
 
 			function Elements.NewColorPicker(argstable)
 				local colText = argstable["Name"]
-				local colInf = argstable["Info"]
+				local colInf = argstable["InfoText"]
 				local defcolor = argstable["Default"]
 				local callback = argstable["Function"]
 				local h, s, v = Color3.toHSV(defcolor)
