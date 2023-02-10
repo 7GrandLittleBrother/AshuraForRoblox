@@ -11,6 +11,14 @@ local lplr = players.LocalPlayer
 local cam = game:GetService("Workspace").CurrentCamera
 local modules = {}
 
+local function isAlive(plr)
+	plr = plr or lplr
+	if not plr.Character then return false end
+	if not plr.Character:FindFirstChild("Head") then return false end
+	if not plr.Character:FindFirstChild("Humanoid") then return false end
+	return true
+end
+
 local function runcode(func)
 	func()
 end
@@ -96,6 +104,32 @@ runcode(function()
 		SwordController = KnitClient.Controllers.SwordController
 	}
 end)
+
+local function getNearestPlayer(maxdist)
+	local obj = lplr
+	local dist = math.huge
+	for i,v in pairs(game:GetService("Players"):GetChildren()) do
+		if v.Team ~= lplr.Team and v ~= lplr and isAlive(v) and isAlive(lplr) and v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
+			local mag = (v.Character.HumanoidRootPart.Position - lplr.Character.HumanoidRootPart.Position).Magnitude
+			if (mag < dist) and (mag < maxdist) then
+				dist = mag
+				obj = v
+			end
+		end
+	end
+	return obj
+end
+
+local function playSound(id, volume) 
+	local sound = Instance.new("Sound")
+	sound.Parent = workspace
+	sound.SoundId = id
+	sound.PlayOnRemove = true 
+	if volume then 
+		sound.Volume = volume
+	end
+	sound:Destroy()
+end
 
 local function playAnimation(id) 
 	if lplr.Character.Humanoid.Health > 0 then 
@@ -195,7 +229,7 @@ task.spawn(function()
 		windsnow.Parent = snowpart
 		repeat
 			task.wait()
-			if lplr.Character.Humanoid.Health > 0 then 
+			if isAlive(lplr) then 
 				snowpart.Position = lplr.Character.HumanoidRootPart.Position + Vector3.new(0, 100, 0)
 			end
 		until lplr.Character.Parent == nil
@@ -291,35 +325,39 @@ end)
 
 runcode(function()
 	local Killauraswing = {["Enabled"] = false}
+	local Killaurasound = {["Enabled"] = false}
 	local KillauraRange = {["Value"] = 18}
 	local Killaura = {["Enabled"] = false}
 	local killauraremote = modules.ClientHandler:Get(modules.AttackRemote)
-	function killaura()
-		for i,v in pairs(game.Players:GetChildren()) do
-			if v.Character and v.Name ~= game.Players.LocalPlayer.Name and v.Character:FindFirstChild("HumanoidRootPart") then
-				local mag = (v.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-				if mag <= KillauraRange["Value"] and v.Team ~= game.Players.LocalPlayer.Team and v.Character:FindFirstChild("Humanoid") then
-					if v.Character.Humanoid.Health > 0 then
-						local selfpos = lplr.Character.HumanoidRootPart.Position + (KillauraRange["Value"] > 14 and (lplr.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude > 14 and (CFrame.lookAt(lplr.Character.HumanoidRootPart.Position, v.Character.HumanoidRootPart.Position).lookVector * 4) or Vector3.new(0, 0, 0))
-						local sword = getCurrentSword()
-						killauraremote:SendToServer({
-							["weapon"] = sword ~= nil and sword.tool,
-							["entityInstance"] = v.Character,
-							["validate"] = {
-								["raycast"] = {
-									["cameraPosition"] = hashvec(cam.CFrame.Position),
-									["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, v.Character.HumanoidRootPart.CFrame.Position).Unit.Direction)
-								},
-								["targetPosition"] = hashvec(v.Character.HumanoidRootPart.CFrame.Position),
-								["selfPosition"] = hashvec(selfpos)
-							},
-							["chargedAttack"] = {["chargeRatio"] = 0}
-						})
-						if not Killauraswing["Enabled"] then
-							playAnimation("rbxassetid://4947108314")
-						end
-					end
-				end
+	local function attackEntity(plr)
+		local root = plr.Character.HumanoidRootPart
+		if not root then
+			return nil
+		end
+		local selfrootpos = lplr.Character.HumanoidRootPart.Position
+		local selfpos = selfrootpos + (KillauraRange["Value"] > 14 and (selfrootpos - root.Position).magnitude > 14 and (CFrame.lookAt(selfrootpos, root.Position).lookVector * 4) or Vector3.zero)
+		local sword = getCurrentSword()
+		killauraremote:SendToServer({
+			["weapon"] = sword ~= nil and sword.tool,
+			["entityInstance"] = plr.Character,
+			["validate"] = {
+				["raycast"] = {
+					["cameraPosition"] = hashvec(cam.CFrame.Position),
+					["cursorDirection"] = hashvec(Ray.new(cam.CFrame.Position, root.CFrame.Position).Unit.Direction)
+				},
+				["targetPosition"] = hashvec(root.CFrame.Position),
+				["selfPosition"] = hashvec(selfpos)
+			},
+			["chargedAttack"] = {["chargeRatio"] = 0}
+		})
+		if not Killauraswing["Enabled"] then
+			if Killaura["Enabled"] then
+				playAnimation("rbxassetid://4947108314")
+			end
+		end
+		if not Killaurasound["Enabled"] then
+			if Killaura["Enabled"] then
+				playSound("rbxassetid://6760544639", 0.5)
 			end
 		end
 	end
@@ -329,7 +367,10 @@ runcode(function()
 			Killaura["Enabled"] = callback
 			if Killaura["Enabled"] then
 				RunLoops:BindToHeartbeat("Killaura", 1, function()
-					killaura()
+					local plrs = getNearestPlayer(KillauraRange["Value"] - 0.0001)
+					for i,plr in pairs(plrs) do
+						task.spawn(attackEntity(plr))
+					end
 				end)
 			else
 				RunLoops:UnbindFromHeartbeat("Killaura")
@@ -338,9 +379,16 @@ runcode(function()
 		["Info"] = "Attack players/enemies that are near."
 	})
 	Sections["Killaura"].NewToggle({
+		["Name"] = "No Swing Sound",
+		["Function"] = function(val)
+			Killauraswing["Enabled"] = val
+		end,
+		["Info"] = "Removes the swinging sound."
+	})
+	Sections["Killaura"].NewToggle({
 		["Name"] = " No Swing",
-		["Function"] = function(callback)
-			Killauraswing["Enabled"] = callback
+		["Function"] = function(val)
+			Killauraswing["Enabled"] = val
 		end,
 		["Info"] = "Removes the swinging animation."
 	})
