@@ -436,7 +436,7 @@ runcode(function()
 	local antivoidconnection
 	local antivoiding = false
 	local antitransparent = {["Value"] = 50}
-	local anticolor = {["Hue"] = 0, ["Sat"] = 0, ["Value"] = 0.55}
+	local anticolor = {["Hue"] = 1, ["Sat"] = 1, ["Value"] = 0.55}
 	local AntiVoid = {["Enabled"] = false}
 	Sections["AntiVoid"].NewToggle({
 		["Name"] = "AntiVoid",
