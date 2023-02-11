@@ -6,7 +6,9 @@ local function createnotification(title, text, delay)
 	})
 end
 
-createnotification("AshuraClient", "Ashura Already Injected", 5)
+if not shared.AshuraExecuted then
+	createnotification("AshuraClient", "Ashura Already Injected", 5)
+end
 shared.AshuraExecuted = true
 
 shared.GuiLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandLittleBrother/AshuraForRoblox/main/GuiLibrary.lua", true))()
