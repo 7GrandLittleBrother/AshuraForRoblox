@@ -464,7 +464,7 @@ runcode(function()
 					end)
 				end)
 			else
-			if antivoidconnection then antivoidconnection:Disconnect() end
+				if antivoidconnection then antivoidconnection:Disconnect() end
 				if antivoidpart then
 					antivoidpart:Remove() 
 				end
@@ -488,7 +488,7 @@ runcode(function()
 		["Name"] = "Color",
 		["Default"] = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
 		["Function"] = function(val)
-			Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"]) = val
+			anticolor["Hue"], anticolor["Sat"], anticolor["Value"] = val
 			if antivoidpart then
 				antivoidpart.Color = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
 			end
