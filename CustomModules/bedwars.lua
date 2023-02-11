@@ -400,7 +400,7 @@ runcode(function()
 	Sections["Killaura"].NewToggle({
 		["Name"] = "No Swing Sound",
 		["Function"] = function(val)
-			Killauraswing["Enabled"] = val
+			Killaurasound["Enabled"] = val
 		end,
 		["InfoText"] = "Removes the swinging sound."
 	})
