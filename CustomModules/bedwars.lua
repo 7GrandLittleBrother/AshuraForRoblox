@@ -473,7 +473,7 @@ runcode(function()
 		["InfoText"] = "Prevents falling in void"
 	})
 	Sections["AntiVoid"].NewSlider({
-		["Name"] = "Transparency/Invisible",
+		["Name"] = "Invisible",
 		["Min"] = 1,
 		["Max"] = 100,
 		["Default"] = 50,
@@ -481,6 +481,16 @@ runcode(function()
 			antitransparent["Value"] = val
 			if antivoidpart then
 				antivoidpart.Transparency = 1 - (antitransparent["Value"] / 100)
+			end
+		end
+	})
+	Sections["AntiVoid"].NewColorPicker({
+		["Name"] = "Color",
+		["Default"] = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
+		["Function"] = function(val)
+			Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"]) = val
+			if antivoidpart then
+				antivoidpart.Color = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
 			end
 		end
 	})
