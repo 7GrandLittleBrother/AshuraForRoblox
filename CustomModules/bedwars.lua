@@ -436,7 +436,7 @@ runcode(function()
 	local antivoidconnection
 	local antivoiding = false
 	local antitransparent = {["Value"] = 50}
-	local anticolor = {["Red"] = 140, ["Green"] = 0, ["Blue"] = 0}
+	local anticolor = {["Hue"] = 1, ["Sat"] = 1, ["Value"] = 0.55}
 	local AntiVoid = {["Enabled"] = false}
 	Sections["AntiVoid"].NewToggle({
 		["Name"] = "AntiVoid",
@@ -464,7 +464,7 @@ runcode(function()
 					end)
 				end)
 			else
-				if antivoidconnection then antivoidconnection:Disconnect() end
+			if antivoidconnection then antivoidconnection:Disconnect() end
 				if antivoidpart then
 					antivoidpart:Remove() 
 				end
@@ -486,10 +486,11 @@ runcode(function()
 	})
 	Sections["AntiVoid"].NewColorPicker({
 		["Name"] = "Color",
-		["Default"] = Color3.fromHSV(anticolor["Red"], anticolor["Green"], anticolor["Blue"]),
-		["Function"] = function()
+		["Default"] = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"]),
+		["Function"] = function(val)
+			anticolor["Hue"], anticolor["Sat"], anticolor["Value"] = val
 			if antivoidpart then
-				antivoidpart.Color = Color3.fromHSV(anticolor["Red"], anticolor["Green"], anticolor["Blue"])
+				antivoidpart.Color = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
 			end
 		end
 	})
