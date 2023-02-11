@@ -436,7 +436,7 @@ runcode(function()
 	local antivoidconnection
 	local antivoiding = false
 	local antitransparent = {["Value"] = 50}
-	local anticolor = {["Hue"] = 1, ["Sat"] = 1, ["Value"] = 0.55}
+	local anticolor = {["Red"] = 140, ["Green"] = 0, ["Blue"] = 0}
 	local AntiVoid = {["Enabled"] = false}
 	Sections["AntiVoid"].NewToggle({
 		["Name"] = "AntiVoid",
@@ -449,7 +449,7 @@ runcode(function()
 					antivoidpart.Size = Vector3.new(10000, 1, 10000)
 					antivoidpart.Anchored = true
 					antivoidpart.Material = Enum.Material.Neon
-					antivoidpart.Color = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
+					antivoidpart.Color = Color3.fromHSV(anticolor["Red"], anticolor["Green"], anticolor["Blue"])
 					antivoidpart.Transparency = 1 - (antitransparent["Value"] / 100)
 					antivoidpart.Position = lplr.Character.HumanoidRootPart.Position - Vector3.new(0, 21, 0)
 					antivoidpart.Parent = workspace
@@ -486,11 +486,11 @@ runcode(function()
 	})
 	Sections["AntiVoid"].NewColorPicker({
 		["Name"] = "Color",
-		["Default"] = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"]),
+		["Default"] = Color3.fromHSV(anticolor["Red"], anticolor["Green"], anticolor["Blue"]),
 		["Function"] = function(val)
 			anticolor = val
 			if antivoidpart then
-				antivoidpart.Color = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
+				antivoidpart.Color = Color3.fromHSV(anticolor["Red"], anticolor["Green"], anticolor["Blue"])
 			end
 		end
 	})
