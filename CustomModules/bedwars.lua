@@ -368,12 +368,12 @@ runcode(function()
 			},
 			["chargedAttack"] = {["chargeRatio"] = 0}
 		})
-		if not Killauraswing["Enabled"] then
+		if not killauraswing["Enabled"] then
 			if Killaura["Enabled"] then
 				playAnimation("rbxassetid://4947108314")
 			end
 		end
-		if not Killaurasound["Enabled"] then
+		if not killaurasound["Enabled"] then
 			if Killaura["Enabled"] then
 				playSound("rbxassetid://6760544639", 0.5)
 			end
@@ -464,7 +464,7 @@ runcode(function()
 					end)
 				end)
 			else
-			if antivoidconnection then antivoidconnection:Disconnect() end
+				if antivoidconnection then antivoidconnection:Disconnect() end
 				if antivoidpart then
 					antivoidpart:Remove() 
 				end
@@ -488,9 +488,8 @@ runcode(function()
 		["Name"] = "Color",
 		["Default"] = Color3.fromRGB(anticolor["Red"], anticolor["Green"], anticolor["Blue"]),
 		["Function"] = function(val)
-			anticolor = val
 			if antivoidpart then
-				antivoidpart.Color = Color3.fromRGB(anticolor["Red"], anticolor["Green"], anticolor["Blue"])
+				antivoidpart.Color = Color3.fromRGB(val)
 			end
 		end
 	})
