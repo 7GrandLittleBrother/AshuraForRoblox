@@ -578,7 +578,7 @@ if shared.AshuraExecuted then
 				local Elements = {}
 				function Elements.NewButton(bname,tipINf, callback, argstable)
 					local bname = argstable["Name"]
-					local tipINf = argstable["InfoText"]
+					local tipINf = argstable["InfoText"] or ""
 					local callback = argstable["Function"]
 					showLogo = showLogo or true
 					local ButtonFunction = {}
@@ -779,7 +779,7 @@ if shared.AshuraExecuted then
 
 				function Elements.NewTextBox(argstable)
 					local tname = argstable["Name"]
-					local tTip = argstable["InfoText"]
+					local tTip = argstable["InfoText"] or ""
 					local callback = argstable["Function"]
 					local textboxElement = Instance.new("TextButton")
 					local UICorner = Instance.new("UICorner")
@@ -975,7 +975,7 @@ if shared.AshuraExecuted then
 
 				function Elements.NewToggle(argstable)
 					local tname = argstable["Name"]
-					local nTip = argstable["InfoText"]
+					local nTip = argstable["InfoText"] or ""
 					local callback = argstable["Function"]
 					local TogFunction = {}
 					local toggled = false
@@ -1224,11 +1224,11 @@ if shared.AshuraExecuted then
 
 				function Elements.NewSlider(argstable)
 					local slidInf = argstable["Name"]
-					local slidTip = argstable["InfoText"]
+					local slidTip = argstable["InfoText"] or ""
 					local minvalue = argstable["Min"]
 					local maxvalue = argstable["Max"]
+					local defaultvalue = argstable["Default"] or 0
 					local callback = argstable["Function"]
-					startVal = startVal or 0
 
 					local sliderElement = Instance.new("TextButton")
 					local UICorner = Instance.new("UICorner")
@@ -1468,7 +1468,7 @@ if shared.AshuraExecuted then
 
 				function Elements.NewDropdown(argstable)
 					local dropname = argstable["Name"]
-					local dropinf = argstable["InfoText"]
+					local dropinf = argstable["InfoText"] or ""
 					local list = argstable["List"]
 					local callback = argstable["Function"]
 					local DropFunction = {}
@@ -1916,7 +1916,7 @@ if shared.AshuraExecuted then
 				end
 				function Elements.NewKeybind(keytext, keyinf, first, callback, argstable)
 					local keytext = argstable["Name"]
-					local keyinf = argstable["InfoText"]
+					local keyinf = argstable["InfoText"] or ""
 					local first = argstable["Keybind"]
 					local callback = argstable["Function"]
 					local oldKey = first.Name
@@ -2130,7 +2130,7 @@ if shared.AshuraExecuted then
 
 				function Elements.NewColorPicker(argstable)
 					local colText = argstable["Name"]
-					local colInf = argstable["InfoText"]
+					local colInf = argstable["InfoText"] or ""
 					local defcolor = argstable["Default"]
 					local callback = argstable["Function"]
 					local h, s, v = Color3.toHSV(defcolor)
