@@ -12,11 +12,9 @@ local cam = game:GetService("Workspace").CurrentCamera
 local modules = {}
 
 local function isAlive(plr)
-	plr = plr or lplr
-	if not plr.Character then return false end
-	if not plr.Character:FindFirstChild("Head") then return false end
-	if not plr.Character:FindFirstChild("Humanoid") then return false end
-	return true
+	if plr then
+		return plr and plr.Character and plr.Character.Parent ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("Humanoid")
+	end
 end
 
 local function runcode(func)
@@ -273,7 +271,8 @@ local Sections = {
 	["NoClickDelay"] = Tabs["Combat"].NewSection("NoClickDelay"),
 	["Sprint"] = Tabs["Combat"].NewSection("Sprint"),
 	["Killaura"] = Tabs["Blatant"].NewSection("Killaura"),
-	["NoFall"] = Tabs["Blatant"].NewSection("NoFall")
+	["NoFall"] = Tabs["Blatant"].NewSection("NoFall"),
+	["AntiVoid"] = Tabs["World"].NewSection("AntiVoid")
 }
 
 runcode(function()
@@ -343,9 +342,9 @@ runcode(function()
 end)
 
 runcode(function()
-	local Killauraswing = {["Enabled"] = false}
-	local Killaurasound = {["Enabled"] = false}
-	local KillauraRange = {["Value"] = 18}
+	local killauraswing = {["Enabled"] = false}
+	local killaurasound = {["Enabled"] = false}
+	local killaurarange = {["Value"] = 18}
 	local Killaura = {["Enabled"] = false}
 	local killauraremote = modules.ClientHandler:Get(modules.AttackRemote)
 	local function attackEntity(plr)
@@ -354,7 +353,7 @@ runcode(function()
 			return nil
 		end
 		local selfrootpos = lplr.Character.HumanoidRootPart.Position
-		local selfpos = selfrootpos + (KillauraRange["Value"] > 14 and (selfrootpos - root.Position).magnitude > 14 and (CFrame.lookAt(selfrootpos, root.Position).lookVector * 4) or Vector3.zero)
+		local selfpos = selfrootpos + (killaurarange["Value"] > 14 and (selfrootpos - root.Position).magnitude > 14 and (CFrame.lookAt(selfrootpos, root.Position).lookVector * 4) or Vector3.zero)
 		local sword = getCurrentSword()
 		killauraremote:SendToServer({
 			["weapon"] = sword ~= nil and sword.tool,
@@ -386,7 +385,7 @@ runcode(function()
 			Killaura["Enabled"] = callback
 			if Killaura["Enabled"] then
 				RunLoops:BindToHeartbeat("Killaura", 1, function()
-					local plrs = GetAllNearestHumanoidToPosition(KillauraRange["Value"] - 0.0001, 1)
+					local plrs = GetAllNearestHumanoidToPosition(killaurarange["Value"] - 0.0001, 1)
 					for i,plr in pairs(plrs) do
 						task.spawn(attackEntity, plr)
 					end
@@ -400,14 +399,14 @@ runcode(function()
 	Sections["Killaura"].NewToggle({
 		["Name"] = "No Swing Sound",
 		["Function"] = function(val)
-			Killaurasound["Enabled"] = val
+			killaurasound["Enabled"] = val
 		end,
 		["InfoText"] = "Removes the swinging sound."
 	})
 	Sections["Killaura"].NewToggle({
 		["Name"] = " No Swing",
 		["Function"] = function(val)
-			Killauraswing["Enabled"] = val
+			killauraswing["Enabled"] = val
 		end,
 		["InfoText"] = "Removes the swinging animation."
 	})
@@ -429,5 +428,60 @@ runcode(function()
 			end
 		end,
 		["InfoText"] = "Prevents taking fall damage."
+	})
+end)
+
+runcode(function()
+	local antivoidpart
+	local antivoidconnection
+	local antivoiding = false
+	local antitransparent = {["Value"] = 50}
+	local anticolor = {["Hue"] = 1, ["Sat"] = 1, ["Value"] = 0.55}
+	local AntiVoid = {["Enabled"] = false}
+	Sections["AntiVoid"].NewToggle({
+		["Name"] = "AntiVoid",
+		["Function"] = function(callback)
+			AntiVoid["Enabled"] = callback
+			if AntiVoid["Enabled"] then
+				task.spawn(function()
+					antivoidpart = Instance.new("Part")
+					antivoidpart.CanCollide = false
+					antivoidpart.Size = Vector3.new(10000, 1, 10000)
+					antivoidpart.Anchored = true
+					antivoidpart.Material = Enum.Material.Neon
+					antivoidpart.Color = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
+					antivoidpart.Transparency = 1 - (antitransparent["Value"] / 100)
+					antivoidpart.Position = lplr.Character.HumanoidRootPart.Position - Vector3.new(0, 21, 0)
+					antivoidpart.Parent = workspace
+					antivoidconnection = antivoidpart.Touched:Connect(function(touched)
+						if touched.Parent == lplr.Character and isAlive(lplr) then
+							if (not antivoiding) and lplr.Character.Humanoid.Health > 0 then
+								antivoiding = true
+								lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0, 125, 0)
+								antivoiding = false
+							end
+						end
+					end)
+				end)
+			else
+			if antivoidconnection then antivoidconnection:Disconnect() end
+				if antivoidpart then
+					antivoidpart:Remove() 
+				end
+			end
+		end,
+		["InfoText"] = "Prevents falling in void"
+	})
+	Sections["AntiVoid"].NewSlider({
+		["Name"] = "Transparency/Invisible",
+		["Min"] = 1,
+		["Max"] = 100,
+		["Default"] = 50,
+		["Function"] = function(val)
+			antitransparent["Value"] = val
+			if antivoidpart then
+				antivoidpart.Transparency = 1 - (antitransparent["Value"] / 100)
+			end
+		end
 	})
 end)
