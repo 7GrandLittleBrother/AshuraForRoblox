@@ -486,7 +486,7 @@ runcode(function()
 	})
 	Sections["AntiVoid"].NewColorPicker({
 		["Name"] = "Color",
-		["Default"] = Color3.fromRGB(anticolor["Red"], anticolor["Green"], anticolor["Blue"]),
+		["Default"] = Color3.fromRGB(0,0,0),
 		["Function"] = function(val)
 			if antivoidpart then
 				antivoidpart.Color = Color3.fromRGB(val)
