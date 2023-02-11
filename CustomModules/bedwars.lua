@@ -488,9 +488,8 @@ runcode(function()
 		["Name"] = "Color",
 		["Default"] = Color3.fromRGB(1,1,1),
 		["Function"] = function(val)
-			anticolor = val
 			if antivoidpart then
-				antivoidpart.Color = Color3.fromRGB(anticolor["Red"], anticolor["Green"], anticolor["Blue"])
+				antivoidpart.Color = Color3.fromRGB(val)
 			end
 		end
 	})
