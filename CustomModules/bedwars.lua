@@ -488,7 +488,7 @@ runcode(function()
 		["Name"] = "Color",
 		["Default"] = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"]),
 		["Function"] = function(val)
-			anticolor["Hue"], anticolor["Sat"], anticolor["Value"] = val
+			anticolor = val
 			if antivoidpart then
 				antivoidpart.Color = Color3.fromHSV(anticolor["Hue"], anticolor["Sat"], anticolor["Value"])
 			end
