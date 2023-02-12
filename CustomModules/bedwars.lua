@@ -1,9 +1,4 @@
---[[
-	Credits
-	Vape - Winter Sky
-	Vape - RunLoops
-	Please notify me if you need credits
-]]
+-- // credits to anyone code i used/lookeed at
 local GuiLibrary = shared.GuiLibrary
 
 local players = game:GetService("Players")
