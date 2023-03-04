@@ -576,7 +576,7 @@ if shared.AshuraExecuted then
 				updateSectionFrame()
 				UpdateSize()
 				local Elements = {}
-				function Elements.NewButton(bname,tipINf, callback, argstable)
+				function Elements.NewButton(argstable)
 					local bname = argstable["Name"]
 					local tipINf = argstable["InfoText"] or ""
 					local callback = argstable["Function"]
@@ -1914,7 +1914,7 @@ if shared.AshuraExecuted then
 					end
 					return DropFunction
 				end
-				function Elements.NewKeybind(keytext, keyinf, first, callback, argstable)
+				function Elements.NewKeybind(argstable)
 					local keytext = argstable["Name"]
 					local keyinf = argstable["InfoText"] or ""
 					local first = argstable["Keybind"]
